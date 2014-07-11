@@ -4,7 +4,8 @@
             [clojure.string :as str]
             [hindenbug.util.json :as json]
             [goog.string :as gstring]
-            [goog.string.format]))
+            [goog.string.format]
+            [cljs.core.async :refer (take!)]))
 
 (def ^:dynamic url "https://api.github.com/")
 (def ^:dynamic defaults {})
@@ -100,21 +101,15 @@
              body))))
 
 (defn api-call
+  "(Doesn't respect `:all-pages`...)"
   ([method end-point] (api-call method end-point nil nil))
   ([method end-point positional] (api-call method end-point positional nil))
   ([method end-point positional query]
      (let [query (query-map query)
            all-pages? (query "all_pages")
            req (make-request method end-point positional query)
-           exec-request-one (fn exec-request-one [req]
-                              (safe-parse (http/request req)))
-           exec-request (fn exec-request [req]
-                          (let [resp (exec-request-one req)]
-                            (if (and all-pages? (-> resp meta :links :next))
-                              (let [new-req (update-req req (-> resp meta :links :next))]
-                                (lazy-cat resp (exec-request new-req)))
-                              resp)))]
-       (exec-request req))))
+           resp (http/request req)]
+       (take! resp safe-parse))))
 
 (defn- join-labels [m]
   (if (:labels m)
