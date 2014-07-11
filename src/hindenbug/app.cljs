@@ -22,7 +22,7 @@
       "Login"))))
 
 (defn dominant-component [app-state]
-  (print (get-in app-state [:navigation-point]))
+  (print "New dominant component: " (get-in app-state [:navigation-point]))
   (condp = (get-in app-state [:navigation-point])
     :login-screen login-screen
     :dashboard dashboard
