@@ -22,6 +22,8 @@
                (when fragment {:_fragment fragment}))))))
 
 
-(defn define-routes! [nav-ch]
-  (defroute v1-root (FragmentRoute. "/") {:as params}
-    (put! nav-ch [])))
+(defn define-routes! [state]
+  (let [nav-ch (get-in @state [:comms :nav])]
+    (defroute v1-root (FragmentRoute. "/") {:as params}
+      ;(put! nav-ch [])
+      )))
