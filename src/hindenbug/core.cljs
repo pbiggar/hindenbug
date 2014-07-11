@@ -118,7 +118,7 @@
 
     (om/root
      app/app
-     app-state
+     state
      {:target (. js/document (getElementById "app"))
       :shared {:comms comms}})
 
