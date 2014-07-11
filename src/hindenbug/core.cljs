@@ -105,14 +105,6 @@
      (swap! state (partial api-con/api-event container message status api-data))
      (api-con/post-api-event! container message status api-data previous-state @state))))
 
-(defn setup-timer-atom
-  "Sets up an atom that will keep track of the current time.
-   Used from hindenbug.components.common/updating-duration "
-  []
-  (let [mya (atom (time/now))]
-    (js/setInterval #(reset! mya (time/now)) 1000)
-    mya))
-
 (defn main [state top-level-node]
   (let [comms       (:comms @state)
         container   (sel1 top-level-node "#om-app")
