@@ -46,17 +46,6 @@
 
 ;; --- Navigation Multimethod Implementations ---
 
-(defmethod navigated-to :default
-  [history-imp navigation-point args state]
-  (-> state
-      (assoc :navigation-point navigation-point
-             :navigation-data args)))
-
-(defmethod post-navigated-to! :default
-  [history-imp navigation-point args previous-state current-state]
-  (set-page-title! (str/capitalize (name navigation-point)))
-  (scroll! args))
-
 (defmethod post-navigated-to! :navigate!
   [history-imp navigation-point {:keys [path replace-token?]} previous-state current-state]
   (let [path (if (= \/ (first path))
@@ -66,29 +55,14 @@
       (.replaceToken history-imp path)
       (.setToken history-imp path))))
 
-(defmethod navigated-to :error
-  [history-imp navigation-point {:keys [status] :as args} state]
+(defmethod navigated-to :default
+  [history-imp navigation-point args state]
   (-> state
       (assoc :navigation-point navigation-point
              :navigation-data args)))
 
-(defmethod post-navigated-to! :error
-  [history-imp navigation-point {:keys [status] :as args} previous-state current-state]
-  (set-page-title! (condp = status
-                     401 "Login required"
-                     404 "Page not found"
-                     500 "Internal server error"
-                     "Something unexpected happened")))
-
-
-(defmethod navigated-to :dashboard
-  [history-imp navigation-point args state]
-  (js/alert "dashboard"))
-
-(defmethod navigated-to :login-screen
-  [history-imp navigation-point args state]
-  (js/alert "login-screen"))
-
-(defmethod navigated-to :login
-  [history-imp navigation-point args state]
-  (js/alert "login"))
+(defmethod post-navigated-to! :default
+  [history-imp navigation-point args previous-state current-state]
+  (set-page-title! (str/capitalize (name navigation-point)))
+;  (scroll! args)
+  )
