@@ -1,6 +1,8 @@
 (ns hindenbug.util.json)
 
-(defn generate-string [val]
+(defn generate-string
+  "Turn a clojurescript value into a JSON one."
+  [val]
   (.stringify js/JSON (clj->js val)))
 
 (defn parse
