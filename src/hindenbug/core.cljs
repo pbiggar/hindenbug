@@ -121,8 +121,7 @@
         history-imp (history/new-history-imp top-level-node)
         controls-tap (chan)
         nav-tap (chan)
-        api-tap (chan)
-]
+        api-tap (chan)]
     (routes/define-routes! state)
 
     (om/root
@@ -173,15 +172,8 @@
    #(when (= :build (:navigation-point @app-state))
       (put! controls-ch [:container-selected (get-in @app-state state/current-container-path)]))))
 
-(defn apply-app-id-hack
-  "Hack to make the top-level id of the app the same as the
-   current knockout app. Lets us use the same stylesheet."
-  []
-  (goog.dom.setProperties (sel1 "#app") #js {:id "om-app"}))
-
 
 (defn ^:export setup! []
-  (apply-app-id-hack)
   (let [state (app-state)]
     ;; globally define the state so that we can get to it for debugging
     (def debug-state state)
