@@ -107,7 +107,7 @@
 
 (defn main [state top-level-node]
   (let [comms       (:comms @state)
-        container   (sel1 top-level-node "#om-app")
+        container   (sel1 top-level-node "#app")
         uri-path    (.getPath utils/parsed-uri)
         history-path "/"
         history-imp (history/new-history-imp top-level-node)
