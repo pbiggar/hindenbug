@@ -133,7 +133,7 @@
            api-tap ([v] (api-handler v state container))
            ;; Capture the current history for playback in the absence
            ;; of a server to store it
-           (async/timeout 10000) (do (print "TODO: print out history: ")))))))
+           (async/timeout 10000) (do nil))))))
 
 (defn setup-browser-repl [repl-url]
   (when repl-url
