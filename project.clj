@@ -24,7 +24,7 @@
 
   :plugins [[lein-cljsbuild "1.0.3"]]
 
-  :source-paths ["src-cljs" "src"]
+  :source-paths ["src"]
 
   :main hindenbug.server
   :hooks [leiningen.cljsbuild]
@@ -44,7 +44,7 @@
                      :source-map true}}
     :prod {:id "hindenbug"
            :source-paths ["src-cljs"]
-           :compiler {:output-to "resources/public/js/cljs.js"
+           :compiler {:output-to "resources/public/js/hindenbug.js"
                       :optimizations :advanced
                       :pretty-print false
 ;                      :source-map true
