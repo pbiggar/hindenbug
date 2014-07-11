@@ -49,4 +49,14 @@
                       :optimizations :advanced
                       :pretty-print false
 ;                      :source-map true
-                      }}}})
+                      }}}}
+
+
+  :jvm-opts ["-Djava.net.preferIPv4Stack=true"
+               "-server"
+               "-XX:MaxPermSize=256m"
+               "-XX:+UseConcMarkSweepGC"
+               "-Xss1m"
+               "-Xmx1024m"
+               "-XX:+CMSClassUnloadingEnabled"
+               "-Dfile.encoding=UTF-8"])
