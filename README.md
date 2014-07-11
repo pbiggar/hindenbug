@@ -5,7 +5,12 @@ A less crappy issue organization tool
 
 # To start
 
+In parallel:
+
 ```
-./server.sh
+lein run
+```
+
+```
 lein cljsbuild auto
 ```
