@@ -17,17 +17,34 @@
                  [weasel "0.3.0"] ;; repl
                  [com.cemerick/url "0.1.1"]
                  ;; tests
-                 [com.cemerick/clojurescript.test "0.3.0"]]
+                 [com.cemerick/clojurescript.test "0.3.0"]
+
+                 ;; backend
+                 [ring/ring-jetty-adapter "1.3.0"]]
 
   :plugins [[lein-cljsbuild "1.0.3"]]
 
-  :source-paths ["src"]
+  :source-paths ["src-cljs" "src"]
 
-  :cljsbuild {
-    :builds [{:id "hindenbug"
-              :source-paths ["src"]
-              :compiler {
-                :output-to "hindenbug.js"
-                :output-dir "out"
-                :optimizations :none
-                :source-map true}}]})
+  :main hindenbug.server
+  :hooks [leiningen.cljsbuild]
+
+  :uberjar-name "backend.jar"
+
+  :min-lein-version "2.0.0"
+
+  :cljsbuild
+  {:builds
+   {:dev {:id "hindenbug"
+          :source-paths ["src-cljs"]
+          :compiler {:output-to "hindenbug.js"
+                     :output-dir "out"
+                     :optimizations :none
+                     :pretty-print true
+                     :source-map true}}
+    :prod {:id "hindenbug"
+           :source-paths ["src-cljs"]
+           :compiler {:output-to "resources/public/js/cljs.js"
+                      :optimizations :advanced
+                      :pretty-print false
+                      :source-map true}}}})
