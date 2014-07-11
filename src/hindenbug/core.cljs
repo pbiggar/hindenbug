@@ -24,7 +24,7 @@
    om/IRender
    (render [this]
      (if-let [current-team (-> data :current-team)]
-       (team-overview [data owner])
+       (team-overview data owner)
        (dom/h1 nil "Teams")))))
 
 (om/root team-listing app-state
