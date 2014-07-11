@@ -161,25 +161,12 @@
                           (str "#" (.getFragment uri)))))))
 
 
-;; XXX this should go in IDidMount on the build container, also doesn't work
-;;     if the user goes to a build page from a different page
-(defn handle-browser-resize
-  "Handles scrolling the container on the build page to the correct position when
-  the size of the browser window chagnes. Has to add an event listener at the top level."
-  [app-state]
-  (goog.events/listen
-   js/window "resize"
-   #(when (= :build (:navigation-point @app-state))
-      (put! controls-ch [:container-selected (get-in @app-state state/current-container-path)]))))
-
-
 (defn ^:export setup! []
   (let [state (app-state)]
     ;; globally define the state so that we can get to it for debugging
     (def debug-state state)
     (main state (sel1 :body))
     (dispatch-to-current-location!)
-    (handle-browser-resize state)
     (try
       (setup-browser-repl (get-in @state [:render-context :browser_connected_repl_url]))
       (catch js/error e
