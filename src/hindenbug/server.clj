@@ -14,10 +14,10 @@
    [:html
     [:head
      [:link {:rel :stylesheet
-             :href "http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"
+             :href "//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"
              :type "text/css"}]]
     [:body
-     [:script {:src "http://fb.me/react-0.9.0.js" :type "text/javascript"}]
+     [:script {:src "//fb.me/react-0.9.0.js" :type "text/javascript"}]
      (if (dev-mode?)
        [:script {:src "out/goog/base.js" :type "text/javascript"}]
        [:script {:src "js/hindenbug.js" :type "text/javascript"}])
