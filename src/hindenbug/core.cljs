@@ -27,14 +27,6 @@
        (team-overview [data owner])
        (dom/h1 nil "Teams")))))
 
-(defn respond-to-oauth-code []
-  (let [code (-> js/document.URL url/url :query (get "code"))
-
-        ;; bug in routing adds a '/' suffix
-        code (.substring code 0 (- (count code) 1))]
-
-    (print code)))
-
 (om/root team-listing app-state
   {:target (. js/document (getElementById "app"))})
 
