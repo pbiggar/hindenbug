@@ -2,32 +2,25 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close! put!]]
             [om.dom :as dom :include-macros true]
             [om.core :as om :include-macros true]
-            [sablono.core :as html]
+            [sablono.core :refer-macros [html]]
             [hindenbug.utils :refer [mlog]])
-  (:require-macros [hindenbug.utils :refer (inspect)]))
+  (:require-macros [hindenbug.utils :refer (inspect defrender)]))
 
-(defn dashboard [data owner]
-  (reify
-   om/IRender
-   (render [_]
-     (if-let [current-team (-> data :current-team)]
-       (dom/h1 nil (-> data :current-team))
-       (dom/h1 nil "Teams")))))
+(defrender dashboard [data owner]
+  (html
+   (if-let [current-team (-> data :current-team)]
+     [:h1 (-> data :current-team)]
+     [:h1 "Teams"])))
 
-(defn login-screen [data owner]
-  (reify
-    om/IRender
-    (render [_]
-      (dom/a
-       {:href "https://github.com/login/oauth/authorize?client_id=48e1586e94ff6d0fe5a4&scope=repo"}
-       "Login"))))
+(defrender login-screen []
+  (html
+   [:a
+    {:href "https://github.com/login/oauth/authorize?client_id=48e1586e94ff6d0fe5a4&scope=repo"}
+    "Login"]))
 
-
-(defn blank-screen [data owner]
-  (reify
-    om/IRender
-    (render [_]
-      (dom/div nil "empty"))))
+(defrender blank-screen []
+  (html
+   [:div "empty"]))
 
 (defn dominant-component [data owner]
   (print "New dominant component: " (get-in data [:navigation-point]))
@@ -36,11 +29,7 @@
     :dashboard dashboard
     nil blank-screen))
 
-(defn app [data owner]
-  (reify
-    om/IDisplayName (display-name [_] "App")
-    om/IRender
-    (render [_]
-      (om/build
-       (dominant-component data)
-       data))))
+(defrender app [data owner]
+  (om/build
+   (dominant-component data owner)
+   data))
