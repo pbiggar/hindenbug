@@ -27,5 +27,9 @@
     (defroute v1-root (FragmentRoute. "/") {:as params}
       (cond
        (:code params)       (put! nav-ch [:login (:code params)])
-       (login/logged-in?)   (put! nav-ch [:dashboard])
-       :else                (put! nav-ch [:login-screen])))))
+       (login/logged-in?)   (put! nav-ch [:teams-overview])
+       :else                (put! nav-ch [:login-screen])))
+    (defroute "/issues/:id" {:as params}
+      (put! nav-ch [:dashboard (:id params)]))
+    (defroute "/issues/new" {:as params}
+      (put! nav-ch [:create-issue]))))
