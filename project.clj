@@ -20,7 +20,8 @@
                  [com.cemerick/clojurescript.test "0.3.0"]
 
                  ;; backend
-                 [ring/ring-jetty-adapter "1.3.0"]]
+                 [ring/ring "1.3.0"]
+                 [hiccup "1.0.5"]]
 
   :plugins [[lein-cljsbuild "1.0.3"]]
 
