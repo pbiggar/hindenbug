@@ -34,9 +34,7 @@
 
     (print code)))
 
-(respond-to-oauth-code)
-
-(om/root team-listing (app-state)
+(om/root team-listing app-state
   {:target (. js/document (getElementById "app"))})
 
 (defn navigation-handler
@@ -48,3 +46,5 @@
         navigation-ch ([v] (navigation-handler v app-state))
         (async/timeout 10000) (do
                                 (print "Sleeping")))))
+
+(respond-to-oauth-code)
