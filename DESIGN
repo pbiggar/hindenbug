@@ -38,3 +38,11 @@ You can easily add columns or cards to issues with a search, or via a "new" butt
 ## New page
 
 Contains a field for title and description. Finds issues that may have been already filed.
+
+
+# Tags
+
+hb:top-level
+hb:exiled
+hb:parent-NNNN
+hb:prev-NNNN
