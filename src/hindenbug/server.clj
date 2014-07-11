@@ -48,15 +48,8 @@
 (defn fetch-github-token [code]
   (let [response (http/post "https://github.com/login/oauth/access_token"
                             {:form-params (assoc github-client-tokens :code code)
-                             :accept :json})
-        {:keys [access-token error]} (json/parse-string (:body response) true)]
-    (if (or error (not access-token))
-      (do
-        (print error)
-        {:status 500
-         :headers {"Content-Type" "text/html"}
-         :body (str "Error found: " error)})
-      access_token)))
+                             :accept :json})]
+    (json/parse-string (:body response) true)))
 
 (deftype UnencryptedJSONCookieStore []
   session-store/SessionStore
@@ -67,13 +60,19 @@
   (delete-session [_ _]
     (json/encode {})))
 
+;; TODO: logout where we delete the cookie
+
 (defn login [req]
   (print req)
-  (let [code (-> req :query-string url/query->map :code)
-        token (fetch-github-token code)]
-    {:status 302
-     :headers {"Location" "/"}
-     :session {:token token :code code}}))
+  (let [code (-> req :query-string url/query->map (get "code"))
+        {:keys [error_description error_uri access_token error]} (fetch-github-token code)]
+    (if (or error error_description error_uri (not access_token))
+      {:status 500
+       :headers {"Content-Type" "text/html"}
+       :body (str "Error found: " error ", " error_description ", " error_uri)}
+      {:status 302
+       :headers {"Location" "/"}
+       :session {:token access_token :code code}})))
 
 (defn handler [req]
   (condp = (:uri req)
