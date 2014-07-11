@@ -47,4 +47,5 @@
            :compiler {:output-to "resources/public/js/cljs.js"
                       :optimizations :advanced
                       :pretty-print false
-                      :source-map true}}}})
+;                      :source-map true
+                      }}}})
