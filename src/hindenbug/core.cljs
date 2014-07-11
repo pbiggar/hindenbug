@@ -107,10 +107,10 @@
 
 (defn main [state top-level-node]
   (let [comms       (:comms @state)
-        container   (sel1 top-level-node "#app")
         uri-path    (.getPath utils/parsed-uri)
         history-path "/"
         history-imp (history/new-history-imp top-level-node)
+        container   (sel1 top-level-node "#app")
         controls-tap (chan)
         nav-tap (chan)
         api-tap (chan)]
@@ -119,7 +119,7 @@
     (om/root
      app/app
      state
-     {:target (. js/document (getElementById "app"))
+     {:target container
       :shared {:comms comms}})
 
     (async/tap (:controls-mult comms) controls-tap)
