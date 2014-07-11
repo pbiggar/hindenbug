@@ -42,7 +42,7 @@
    {:dev {:id "hindenbug"
           :source-paths ["src-cljs"]
           :compiler {:output-to "resources/development/js/hindenbug.js"
-                     :output-dir "resources/development/js/out"
+                     :output-dir "resources/development/js"
                      :optimizations :none
                      :pretty-print true
                      :source-map true}}

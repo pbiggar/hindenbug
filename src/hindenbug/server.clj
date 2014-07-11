@@ -37,10 +37,10 @@
       (page/include-js "//fb.me/react-0.9.0.js")
 
       (if (dev-mode?)
-        (page/include-js "resources/development/js/out/goog/base.js")
-        (page/include-js "resources/development/js/hindenbug.js"))
-
-      (when (dev-mode?)
+        (page/include-js "js/goog/base.js"))
+      
+      (page/include-js "js/hindenbug.js")
+      (when dev-mode?
         [:script {:type "text/javascript"} "goog.require(\"hindenbug.core\");"])]])))
 
 (defn fetch-github-token [code]
@@ -71,14 +71,12 @@
      :headers {"Content-Type" "text/html"}
      :body template}
     "/login" (login req)
-    {:status 200
-     :headers {"Content-Type" "text/html"}
-     :body (str req)}))
+    nil))
 
 (defn wrap-file
   [handler]
   (if (dev-mode?)
-    (file/wrap-file handler "./")
+    (resource/wrap-resource handler "development")
     (resource/wrap-resource handler "public")))
 
 (def app
