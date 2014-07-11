@@ -1,0 +1,2 @@
+web: lein run $PORT
+cljsbuild: lein cljsbuild auto
