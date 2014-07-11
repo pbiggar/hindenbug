@@ -2,6 +2,7 @@
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [cemerick.url :as url]
+            [secretary.core :as secretary :include-macros true :refer [defroute]]
             [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
