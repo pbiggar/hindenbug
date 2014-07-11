@@ -1,7 +1,6 @@
 (ns hindenbug.app
-  (:require [goog.dom :as dom]
-            [om.core :as om]))
-
+  (:require [om.dom :as dom :include-macros true]
+            [om.core :as om :include-macros true]))
 
 (defn team-overview [data owner]
   (dom/h1 nil (-> data :current-team)))
