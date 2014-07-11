@@ -14,12 +14,18 @@
             [hiccup.core :as hiccup]
             [hiccup.page :as page]))
 
-(defn dev-mode? []
-  (-> "HINDENBUG_PRODUCTION" System/getenv nil?))
-
-(defn github-client-tokens []
+(def github-client-tokens
   {:client_id (System/getenv "GITHUB_CLIENT_ID")
    :client_secret (System/getenv "GITHUB_CLIENT_SECRET")})
+
+(when (or (-> github-client-tokens :client_id nil?)
+          (-> github-client-tokens :client_secret nil?))
+  (print "Set GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET for your application")
+  (System/exit -1))
+
+
+(defn dev-mode? []
+  (-> "HINDENBUG_PRODUCTION" System/getenv nil?))
 
 (def template
   (hiccup/html
@@ -38,7 +44,7 @@
 
 (defn fetch-github-token [code]
   (let [response (http/post "https://github.com/login/oauth/access_token"
-                            {:form-params (assoc (github-client-tokens) :code code)
+                            {:form-params (assoc github-client-tokens :code code)
                              :accept :json})
         {:keys [access_token error]} (json/parse-string (:body response) true)]
     (if (or error (not access_token))
