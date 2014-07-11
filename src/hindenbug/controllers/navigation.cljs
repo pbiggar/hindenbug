@@ -79,3 +79,16 @@
                      404 "Page not found"
                      500 "Internal server error"
                      "Something unexpected happened")))
+
+
+(defmethod navigated-to :dashboard
+  [history-imp navigation-point args state]
+  (js/alert "dashboard"))
+
+(defmethod navigated-to :login-screen
+  [history-imp navigation-point args state]
+  (js/alert "login-screen"))
+
+(defmethod navigated-to :login
+  [history-imp navigation-point args state]
+  (js/alert "login"))

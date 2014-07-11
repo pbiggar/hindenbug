@@ -2,6 +2,7 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close! put!]]
             [clojure.string :as str]
             [goog.events :as events]
+            [hindenbug.login :as login]
             [hindenbug.utils :as utils :include-macros true]
             [secretary.core :as sec :include-macros true :refer [defroute]])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
@@ -21,9 +22,10 @@
         (merge match
                (when fragment {:_fragment fragment}))))))
 
-
 (defn define-routes! [state]
   (let [nav-ch (get-in @state [:comms :nav])]
     (defroute v1-root (FragmentRoute. "/") {:as params}
-      ;(put! nav-ch [])
-      )))
+      (cond
+       (:code params)       (put! nav-ch [:login (:code params)])
+       (login/logged-in?)   (put! nav-ch [:dashboard])
+       :else                (put! nav-ch [:login-screen])))))
