@@ -21,7 +21,10 @@
 
                  ;; backend
                  [ring/ring "1.3.0"]
-                 [hiccup "1.0.5"]]
+                 [hiccup "1.0.5"]
+                 [clj-time "0.7.0"]
+                 [clj-http "0.9.2"]
+                 [cheshire "5.3.1"]]
 
   :plugins [[lein-cljsbuild "1.0.3"]]
 
