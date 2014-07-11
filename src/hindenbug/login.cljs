@@ -1,5 +1,6 @@
 (ns hindenbug.login
-  (:require [cemerick.url :as url]))
+  (:require [cemerick.url :as url]
+            [goog.net.cookies :as cookie]))
 
 (defn query-code []
   (let [code (-> js/document.URL url/url :query (get "code"))
@@ -23,19 +24,11 @@
 
 (defn login []
   (let [code (query-code)]
-    (print code)
     (when code
       (store-code code)
       (print "clearing query params")
       (clear-query-params)))
 
-
   (if (logged-in?)
     (js/alert "logged in")
     (js/alert "logged-out")))
-
-(defn init []
-  (let [node (om/root widget {:text "Hello world!"}
-                      {:target (. js/document (getElementById "app"))})]
-    (history/new-history-imp node)
-    (login)))
