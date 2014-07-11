@@ -27,11 +27,12 @@
     [:html
      [:head (page/include-css "//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css")]
      [:body
+      [:div#app]
       (page/include-js "//fb.me/react-0.9.0.js")
 
       (if (dev-mode?)
-        (page/include-js "out/goog/base.js")
-        (page/include-js "js/hindenbug"))
+        (page/include-js "resources/development/js/out/goog/base.js")
+        (page/include-js "resources/development/js/hindenbug.js"))
 
       (when (dev-mode?)
         [:script {:type "text/javascript"} "goog.require(\"hindenbug.core\");"])]])))
@@ -59,6 +60,10 @@
 
 (defn handler [req]
   (condp = (:uri req)
+    "/"
+    {:status 200
+     :headers {"Content-Type" "text/html"}
+     :body template}
     "/login" (login req)
     {:status 200
      :headers {"Content-Type" "text/html"}
