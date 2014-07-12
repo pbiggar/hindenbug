@@ -105,12 +105,16 @@
       (session/wrap-session {:cookie-name "hindenbug-session"
                              :root "/"
                              :store (UnencryptedJSONCookieStore.)
-                             :cookie-attrs {:http-only true
-                                            :max-age (* 60 60 24 365)
+                             :cookie-attrs {:max-age (* 60 60 24 365)
+
+                                            ;; need to access via JS
+                                            :http-only false
+
                                             ;; expire one year after the server starts up
                                             :expires (time-format/unparse
                                                       (:rfc822 time-format/formatters)
                                                       (time/from-now (time/years 1)))
+
                                             :secure (not (dev-mode?))}})
       reload/wrap-reload))
 
