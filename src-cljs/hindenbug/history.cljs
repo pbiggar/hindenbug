@@ -1,5 +1,6 @@
 (ns hindenbug.history
   (:require [clojure.string :as string]
+            [secretary.core :as sec]
             [goog.events :as events]
             [goog.history.Html5History :as html5-history])
   (:import [goog.history Html5History]
@@ -24,18 +25,18 @@
 
     transformer))
 
-;; (defn setup-dispatcher! [history-imp]
-;;   (events/listen history-imp goog.history.EventType.NAVIGATE
-;;                  #(sec/dispatch! (str "/" (.-token %)))))
+(defn setup-dispatcher! [history-imp]
+  (events/listen history-imp goog.history.EventType.NAVIGATE
+                 #(sec/dispatch! (str "/" (.-token %)))))
 
-;; (defn route-fragment
-;;   "Returns the route fragment if this is a route that we've don't dispatch
-;;   on fragments for."
-;;   [path]
-;;   (-> path
-;;       sec/locate-route
-;;       :params
-;;       :_fragment))
+(defn route-fragment
+  "Returns the route fragment if this is a route that we've don't dispatch
+  on fragments for."
+  [path]
+  (-> path
+      sec/locate-route
+      :params
+      :_fragment))
 
 (defn path-matches?
   "True if the two tokens are the same except for the fragment"

@@ -11,3 +11,5 @@ pom.xml.asc
 .lein-failures
 /out
 /hindenbug.js
+/resources/public/js/hindenbug.js
+/resources/development/

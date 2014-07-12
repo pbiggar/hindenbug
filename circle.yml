@@ -1,0 +1,9 @@
+test:
+  override:
+    - lein cljsbuild once
+
+deployment:
+  deploy:
+    branch: master
+    heroku:
+      appname: ghi-heisenbug

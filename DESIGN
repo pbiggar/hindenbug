@@ -1,0 +1,48 @@
+# Usage
+
+Very like trello, in the it's a board-based task ordering.
+
+Each board is a github issue, representing something. At the top-level, that might be a team, and then at a lower lever it might be a project, a task and a list of tasks.
+
+To be part of an issue, you have a github tag that indicated your parent. So it's a DAG, and it's recursive: you can click on a column, a card, or go to the parent, and it's turtles all the way down.
+
+Prioritization in boards are left-to-to right, and in columns top-to-bottom. Ordering is, again, by github tag (linked list this time)
+
+The idea is that projects are scoped only big enough to fit on a page, and may be split into multiple parts of a few tasks each.
+
+
+# URL structure
+
+/ is the dashboard
+/1023 is the issue number
+/new is to add new tasks
+
+
+# UI
+
+## Dashboard
+Just a top-level board featuring issues tagged "top-level".
+
+## Sidebar
+Recent activity, and who is assigned to what.
+
+## Board
+Each board is for an issue, numbered I. It contains columns (C) that include all issues tagged "parent: I"
+
+Columns contain cards which are tagged "parent: C". And so it goes.
+
+You can click into columns or cards.
+
+You can easily add columns or cards to issues with a search, or via a "new" button.
+
+## New page
+
+Contains a field for title and description. Finds issues that may have been already filed.
+
+
+# Tags
+
+hb:top-level
+hb:exiled
+hb:parent-NNNN
+hb:prev-NNNN
