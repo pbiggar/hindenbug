@@ -25,10 +25,9 @@
 (defn define-routes! [state]
   (let [nav-ch (get-in @state [:comms :nav])]
     (defroute v1-root (FragmentRoute. "/") {:as params}
-      (cond
-       (:code params)       (put! nav-ch [:login (:code params)])
-       (login/logged-in?)   (put! nav-ch [:teams-overview])
-       :else                (put! nav-ch [:login-screen])))
+      (if (login/logged-in?)
+        (put! nav-ch [:teams-overview])
+        (put! nav-ch [:login-screen])))
 
     (defroute v1-root (FragmentRoute. "/login") {:as params}
       (put! nav-ch [:login]))
