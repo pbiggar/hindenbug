@@ -1,6 +1,5 @@
 (ns hindenbug.utils
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close! put!]]
-            [ajax.core :as ajax]
             [cljs-time.core :as time]
             [goog.crypt :as crypt]
             [goog.crypt.Md5 :as md5]
