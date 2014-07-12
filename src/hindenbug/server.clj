@@ -39,9 +39,9 @@
       (page/include-js "//fb.me/react-0.9.0.js")
 
       (if (dev-mode?)
-        (page/include-js "js/goog/base.js"))
+        (page/include-js "/js/goog/base.js"))
 
-      (page/include-js "js/hindenbug.js")
+      (page/include-js "/js/hindenbug.js")
       (when dev-mode?
         [:script {:type "text/javascript"} "goog.require(\"hindenbug.core\");"])]])))
 
@@ -82,15 +82,17 @@
    :headers {"Location" "/"}
    :session nil})
 
-(defn handler [req]
-  (condp = (:uri req)
-    "/" {:status 200
-         :headers {"Content-Type" "text/html"}
-         :body template}
-    "/auth" (auth req)
-    "/login" (login req)
-    "/logout" (logout req)
-    nil))
+(defn router [req]
+  (condp re-matches (:uri req)
+    #"/auth" (auth req)
+    #"/login" (login req)
+    #"/logout" (logout req)
+    #"/js/" nil ; leave to file-wrap
+    #"/css/" nil ; leave to file-wrap
+    {:status 200
+     :headers {"Content-Type" "text/html"}
+     :body template}))
+
 
 (defn wrap-file
   [handler]
@@ -98,8 +100,9 @@
     (resource/wrap-resource handler "development")
     (resource/wrap-resource handler "public")))
 
+;; TODO add gzip
 (def app
-  (-> handler
+  (-> router
       wrap-file
       file-info/wrap-file-info
       (session/wrap-session {:cookie-name "hindenbug-session"
