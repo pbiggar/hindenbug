@@ -62,8 +62,7 @@
 
 ;; TODO: logout where we delete the cookie
 
-(defn login [req]
-  (print req)
+(defn auth [req]
   (let [code (-> req :query-string url/query->map (get "code"))
         {:keys [error_description error_uri access_token error]} (fetch-github-token code)]
     (if (or error error_description error_uri (not access_token))
@@ -72,15 +71,25 @@
        :body (str "Error found: " error ", " error_description ", " error_uri)}
       {:status 302
        :headers {"Location" "/"}
-       :session {:token access_token :code code}})))
+       :session {:token access_token}})))
+
+(defn login [req]
+  {:status 302
+   :headers {"Location" "https://github.com/login/oauth/authorize?client_id=40a61e0d29bc72207572&scope=repo"}})
+
+(defn logout [req]
+  {:status 302
+   :headers {"Location" "/"}
+   :session nil})
 
 (defn handler [req]
   (condp = (:uri req)
-    "/"
-    {:status 200
-     :headers {"Content-Type" "text/html"}
-     :body template}
+    "/" {:status 200
+         :headers {"Content-Type" "text/html"}
+         :body template}
+    "/auth" (auth req)
     "/login" (login req)
+    "/logout" (logout req)
     nil))
 
 (defn wrap-file

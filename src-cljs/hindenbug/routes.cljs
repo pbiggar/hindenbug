@@ -28,4 +28,10 @@
       (cond
        (:code params)       (put! nav-ch [:login (:code params)])
        (login/logged-in?)   (put! nav-ch [:dashboard])
-       :else                (put! nav-ch [:login-screen])))))
+       :else                (put! nav-ch [:login-screen])))
+
+    (defroute v1-root (FragmentRoute. "/login") {:as params}
+      (put! nav-ch [:login]))
+
+    (defroute v1-root (FragmentRoute. "/logout") {:as params}
+      (put! nav-ch [:logout]))))

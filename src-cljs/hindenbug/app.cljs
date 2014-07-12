@@ -14,9 +14,9 @@
 
 (defrender login-screen []
   (html
-   [:a
-    {:href "https://github.com/login/oauth/authorize?client_id=40a61e0d29bc72207572&scope=repo"}
-    "Login"]))
+   [:div
+    [:a {:href "/login"} "Login"]
+    [:a {:href "/logout"} "Logout"]]))
 
 (defrender blank-screen []
   (html

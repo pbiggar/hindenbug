@@ -35,6 +35,9 @@
     (js/requestAnimationFrame #(scroll-to-fragment! (:_fragment args)))
     (js/requestAnimationFrame #(set! (.-scrollTop (sel1 "main.app-main")) 0))))
 
+(defn redirect! [location]
+  (set! js/window.location location))
+
 ;; --- Navigation Multimethod Declarations ---
 
 (defmulti navigated-to
@@ -66,3 +69,13 @@
   (set-page-title! (str/capitalize (name navigation-point)))
 ;  (scroll! args)
   )
+
+
+
+(defmethod navigated-to :login
+  [history-imp navigation-point args previous-state current-state]
+  (redirect! "/login"))
+
+(defmethod navigated-to :logout
+  [history-imp navigation-point args previous-state current-state]
+  (redirect! "/logout"))
