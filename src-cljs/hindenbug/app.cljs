@@ -109,7 +109,7 @@
    [:div
     [:h1 "Teams"]
     (map
-     (fn [issue] 
+     (fn [issue]
        [:h2
         [:a
          {:href (:number issue)}
@@ -119,29 +119,34 @@
 (defrender dashboard [data owner]
   (html [:div]))
 
-(defrender login-screen []
-  (html
-   [:div
-    [:a {:href "/login"} "Login"]
-    [:a {:href "/logout"} "Logout"]]))
+(defrender login-screen [data owner]
+  (html [:div#login [:a {:href "/login"} "Login"]]))
 
-(defrender create-issue []
+(defrender create-issue [data owner]
   (html [:div]))
 
-(defrender blank-screen []
-  (html
-   [:div "empty"]))
+(defrender blank-screen [data owner]
+  (html [:div "empty"]))
 
-(defn dominant-component [data owner]
+(defrender header [data owner]
+  (html [:div#logout [:a {:href "/logout"} "Logout"]]))
+
+(defn dominant-component [data]
   (print "New dominant component: " (get-in data [:navigation-point]))
   (condp = (get-in data [:navigation-point])
-    :login-screen login-screen
     :teams-overview teams-overview
     :dashboard dashboard
     :create-issue create-issue
     nil blank-screen))
 
+(defrender inner [data owner]
+  (html
+   [:div#inner
+    (om/build header data)
+    (om/build (dominant-component data) data)]))
+
 (defrender app [data owner]
-  (om/build
-   (dominant-component data owner)
-   data))
+  (html
+   (if (= :login-screen (get-in data [:navigation-point]))
+     (om/build login-screen data)
+     (om/build inner data))))
