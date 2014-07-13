@@ -127,7 +127,7 @@
                   *: any assigned user.
      mentioned -- A username.
      state     -- open (default), closed.
-     labels    -- A string of comma-separated label names.
+     labels    -- An array of label names.
      sort      -- created (default), updated, comments.
      direction -- asc: ascending,
                   desc (default): descending.
