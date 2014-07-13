@@ -3,7 +3,9 @@
             [clojure.string :as str]
             [goog.dom]
             [goog.string :as gstring]
-            [goog.style])
+            [goog.style]
+            [hindenbug.util.gh :as gh]
+            [hindenbug.login :as login])
   (:require-macros [hindenbug.utils :refer [inspect]]
                    [dommy.macros :refer [sel sel1]]
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
@@ -79,3 +81,8 @@
 (defmethod navigated-to :logout
   [history-imp navigation-point args previous-state current-state]
   (redirect! "/logout"))
+
+(defmethod post-navigated-to! :dashboard
+  [history-imp navigation-point args previous-state current-state]
+  (print
+   (gh/issues "circleci" "stefon" {:oauth_token (login/oauth-token)})))
