@@ -37,7 +37,7 @@
       (put! nav-ch [:logout]))
 
     (defroute "/issues/:id" {:as params}
-      (put! nav-ch [:dashboard (:id params)]))
+      (put! nav-ch [:dashboard (-> params :id js/parseInt)]))
 
     (defroute "/issues/new" {:as params}
       (put! nav-ch [:create-issue]))))
