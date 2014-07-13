@@ -83,6 +83,5 @@
   (redirect! "/logout"))
 
 (defmethod post-navigated-to! :dashboard
-  [history-imp navigation-point args previous-state current-state]
-  (print
-   (gh/issues "circleci" "stefon" {:oauth_token (login/oauth-token)})))
+  [history-imp navigation-point id previous-state current-state]
+  (gh/issue "circleci" "circle" id {:oauth_token (login/oauth-token)}))
