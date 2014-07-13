@@ -97,7 +97,7 @@
            (if (pos? (.indexOf content-type "raw"))
              body
              (if (map? body)
-               (with-meta {:links links :api-meta metadata})
+               (with-meta body {:links links :api-meta metadata})
                (with-meta (map #(with-meta % metadata) body)
                  {:links links :api-meta metadata}))))))
 
