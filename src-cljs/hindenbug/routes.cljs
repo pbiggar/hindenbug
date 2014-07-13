@@ -24,6 +24,7 @@
 
 (defn define-routes! [state]
   (let [nav-ch (get-in @state [:comms :nav])]
+    ;; TODO put logged-in? around all requests: https://github.com/gf3/secretary/issues/41
     (defroute v1-root (FragmentRoute. "/") {:as params}
       (if (login/logged-in?)
         (put! nav-ch [:teams-overview])
