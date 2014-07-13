@@ -94,13 +94,12 @@
    :else (let [links (parse-links (get headers "link" ""))
                content-type (get headers "content-type")
                metadata (extract-useful-meta headers)]
-           (if-not (pos? (.indexOf content-type "raw"))
-             (let [parsed (json/parse body)]
-               (if (map? parsed)
-                 (with-meta parsed {:links links :api-meta metadata})
-                 (with-meta (map #(with-meta % metadata) parsed)
-                   {:links links :api-meta metadata})))
-             body))))
+           (if (pos? (.indexOf content-type "raw"))
+             body
+             (if (map? body)
+               (with-meta {:links links :api-meta metadata})
+               (with-meta (map #(with-meta % metadata) body)
+                 {:links links :api-meta metadata}))))))
 
 (defn api-call
   "(Doesn't respect `:all-pages`...)"
