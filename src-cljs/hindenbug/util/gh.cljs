@@ -41,7 +41,7 @@
                           {:headers {"if-Modified-Since" if_modified_since}}))
         proper-query (dissoc query "auth" "oauth_token" "all_pages" "accept" "user_agent")
         req (if (#{:post :put :delete} method)
-              (assoc req :body (json/generate-string (or (proper-query "raw") proper-query)))
+              (assoc req :json-params (or (proper-query "raw") proper-query))
               (assoc req :query-params proper-query))]
     req))
 
