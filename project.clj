@@ -7,7 +7,7 @@
                  [org.clojure/clojurescript "0.0-2268"]
                  [com.google.javascript/closure-compiler "v20131014"]
                  [org.clojure/core.async "0.1.267.0-0d7780-alpha"]
-                 [cljs-http "0.1.14"]]
+                 [cljs-http "0.1.14"]
                  [cljs-ajax "0.2.6"]
                  [om "0.6.4"]
                  [com.facebook/react "0.10.0"] ;; include for externs
