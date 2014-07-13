@@ -41,15 +41,6 @@
       (submethod target message status args previous-state current-state)
       (merror "Unknown api: " message status args))))
 
-(defmethod api-event [:default :started]
-  [target message status args state]
-  (mlog "No api for" [message status])
-  state)
-
-(defmethod post-api-event! [:default :started]
-  [target message status args previous-state current-state]
-  (mlog "No post-api for: " [message status]))
-
 (defmethod api-event [:default :success]
   [target message status args state]
   (mlog "No api for" [message status])
@@ -66,14 +57,5 @@
   state)
 
 (defmethod post-api-event! [:default :failed]
-  [target message status args previous-state current-state]
-  (mlog "No post-api for: " [message status]))
-
-(defmethod api-event [:default :finished]
-  [target message status args state]
-  (mlog "No api for" [message status])
-  state)
-
-(defmethod post-api-event! [:default :finished]
   [target message status args previous-state current-state]
   (mlog "No post-api for: " [message status]))
