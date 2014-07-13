@@ -27,7 +27,8 @@
                          :basic-auth auth
                          :throw-exceptions throw_exceptions
                          :follow-redirects follow_redirects
-                         :method method}
+                         :method method
+                         :with-credentials? false}
                         (when accept
                           {:headers {"Accept" accept}})
                         (when oauth_token
