@@ -5,7 +5,7 @@
             [hindenbug.util.json :as json]
             [goog.string :as gstring]
             [goog.string.format]
-            [cljs.core.async :refer (take!)])
+            [cljs.core.async :refer (take! put!)])
   (:require-macros [hindenbug.utils :refer [inspect]]))
 
 (def ^:dynamic url "https://api.github.com/")
@@ -63,7 +63,8 @@
   (let [{:strs [etag last-modified x-ratelimit-limit x-ratelimit-remaining
                 x-poll-interval]}
         h]
-    {:etag etag :last-modified last-modified
+    {:etag etag
+     :last-modified last-modified
      :call-limit (when x-ratelimit-limit (json/parse x-ratelimit-limit))
      :call-remaining (when x-ratelimit-remaining (json/parse x-ratelimit-remaining))
      :poll-interval (when x-poll-interval (json/parse x-poll-interval))}))
@@ -80,37 +81,42 @@
        (map parse-link)
        (into {})))
 
-(defn safe-parse
+(defn handle-response
   "Takes a response and checks for certain status codes. If 204,
   return nil.  If 400, 401, 204, 422, 403, 404 or 500, return the
   original response with the body parsed as json. Otherwise, parse and
   return the body if json, or return the body if raw."
-  [{:keys [headers status body] :as resp}]
+  [channel message method {:keys [headers status body] :as resp}]
   (cond
    (= 304 status)
    ::not-modified
+
    (#{400 401 204 422 403 404 500} status)
-   (update-in resp [:body] json/parse)
+   (put! channel [message method :failed status body])
+
    :else (let [links (parse-links (get headers "link" ""))
                content-type (get headers "content-type")
-               metadata (extract-useful-meta headers)]
-           (if (pos? (.indexOf content-type "raw"))
-             body
-             (if (map? body)
-               (with-meta body {:links links :api-meta metadata})
-               (with-meta (map #(with-meta % metadata) body)
-                 {:links links :api-meta metadata}))))))
+               _ (print content-type)
+               metadata (extract-useful-meta headers)
+               _ (print metadata)
+               response (if (some-> content-type (.indexOf "raw") pos?)
+                          body
+                          (if (map? body)
+                            (with-meta body {:links links :api-meta metadata})
+                            (with-meta (map #(with-meta % metadata) body)
+                              {:links links :api-meta metadata})))]
+           (put! channel [message method :success response]))))
 
 (defn api-call
   "(Doesn't respect `:all-pages`...)"
-  ([method end-point] (api-call method end-point nil nil))
-  ([method end-point positional] (api-call method end-point positional nil))
-  ([method end-point positional query]
+  ([channel message method end-point] (api-call method end-point nil nil))
+  ([channel message method end-point positional] (api-call method end-point positional nil))
+  ([channel message method end-point positional query]
      (let [query (query-map query)
            all-pages? (query "all_pages")
            req (make-request method end-point positional query)
            resp (http/request req)]
-       (take! resp safe-parse))))
+       (take! resp (partial handle-response channel message method)))))
 
 (defn- join-labels [m]
   (if (:labels m)
@@ -133,10 +139,10 @@
      direction -- asc: ascending,
                   desc (default): descending.
      since     -- String ISO 8601 timestamp."
-  [user repo & [options]]
-  (api-call :get "repos/%s/%s/issues" [user repo] (join-labels options)))
+  [channel user repo & [options]]
+  (api-call channel :issues :get "repos/%s/%s/issues" [user repo] (join-labels options)))
 
 (defn issue
   "Get a single issue"
-  [user repo number & [options]]
-  (api-call :get "repos/%s/%s/issues/%d" [user repo number] (join-labels options)))
+  [channel user repo number & [options]]
+  (api-call channel :issue :get "repos/%s/%s/issues/%d" [user repo number] (join-labels options)))

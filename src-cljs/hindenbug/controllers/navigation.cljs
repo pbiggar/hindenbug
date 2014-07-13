@@ -84,4 +84,5 @@
 
 (defmethod post-navigated-to! :dashboard
   [history-imp navigation-point id previous-state current-state]
-  (gh/issue "circleci" "circle" id {:oauth_token (login/oauth-token)}))
+  (let [api-ch (get-in current-state [:comms :api])]
+    (gh/issue api-ch "circleci" "circle" id {:oauth_token (login/oauth-token)})))
