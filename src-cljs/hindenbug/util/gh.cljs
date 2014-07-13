@@ -136,3 +136,8 @@
      since     -- String ISO 8601 timestamp."
   [user repo & [options]]
   (api-call :get "repos/%s/%s/issues" [user repo] (join-labels options)))
+
+(defn issue
+  "Get a single issue"
+  [user repo number & [options]]
+  (api-call :get "repos/%s/%s/issues/%d" [user repo number] (join-labels options)))
