@@ -5,7 +5,8 @@
             [hindenbug.util.json :as json]
             [goog.string :as gstring]
             [goog.string.format]
-            [cljs.core.async :refer (take!)]))
+            [cljs.core.async :refer (take!)])
+  (:require-macros [hindenbug.utils :refer [inspect]]))
 
 (def ^:dynamic url "https://api.github.com/")
 (def ^:dynamic defaults {})
