@@ -33,10 +33,10 @@
   (hiccup/html
    (page/html5
     [:html
-     [:head (page/include-css "//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css")]
+     [:head (page/include-css "/css/bootstrap-3.2.0.min.css")]
      [:body
       [:div#app]
-      (page/include-js "//fb.me/react-0.9.0.js")
+      (page/include-js "/js/react-0.9.0.js")
 
       (if (dev-mode?)
         (page/include-js "/js/goog/base.js"))
@@ -104,6 +104,7 @@
 (def app
   (-> router
       wrap-file
+      (resource/wrap-resource "vendor")
       file-info/wrap-file-info
       (session/wrap-session {:cookie-name "hindenbug-session"
                              :root "/"
