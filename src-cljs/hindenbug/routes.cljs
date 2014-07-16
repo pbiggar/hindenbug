@@ -27,7 +27,7 @@
     ;; TODO put logged-in? around all requests: https://github.com/gf3/secretary/issues/41
     (defroute v1-root (FragmentRoute. "/") {:as params}
       (if (login/logged-in?)
-        (put! nav-ch [:teams-overview])
+        (put! nav-ch [:dashboard])
         (put! nav-ch [:login-screen])))
 
     (defroute v1-root (FragmentRoute. "/login") {:as params}
@@ -37,7 +37,7 @@
       (put! nav-ch [:logout]))
 
     (defroute "/issues/:id" {:as params}
-      (put! nav-ch [:dashboard (-> params :id js/parseInt)]))
+      (put! nav-ch [:issue-board (-> params :id js/parseInt)]))
 
     (defroute "/issues/new" {:as params}
       (put! nav-ch [:create-issue]))))

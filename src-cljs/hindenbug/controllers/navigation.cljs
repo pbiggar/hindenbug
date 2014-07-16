@@ -82,7 +82,7 @@
   [history-imp navigation-point args previous-state current-state]
   (redirect! "/logout"))
 
-(defmethod post-navigated-to! :dashboard
+(defmethod post-navigated-to! :issue-board
   [history-imp navigation-point id previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
     (gh/issue api-ch "circleci" "hindenbug-manual-test" id {:oauth_token (login/oauth-token)})))

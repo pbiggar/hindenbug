@@ -1,6 +1,7 @@
 (ns hindenbug.components.app
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close! put!]]
             [hindenbug.components.dashboard :as dashboard]
+            [hindenbug.components.dashboard :as issue-board]
             [hindenbug.components.login :as login]
             [hindenbug.components.new-issue :as new-issue]
             [om.dom :as dom :include-macros true]
@@ -13,12 +14,16 @@
   (html [:div "empty"]))
 
 (defrender header [data owner]
-  (html [:div#logout [:a {:href "/logout"} "Logout"]]))
+  (html
+   [:div
+    [:div#logout [:a {:href "/logout"} "Logout"]]
+    [:div#new [:a {:href "/issues/new"} "New issue"]]]))
 
 (defn dominant-component [data]
   (print "New dominant component: " (get-in data [:navigation-point]))
   (condp = (get-in data [:navigation-point])
     :dashboard dashboard/dashboard
+    :issue-board issue-board/issue-board
     :create-issue new-issue/new-issue
     nil blank-screen))
 
