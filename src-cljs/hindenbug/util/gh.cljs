@@ -101,12 +101,12 @@
    ::not-modified
 
    (#{400 401 204 422 403 404 500} status) (put! channel [event :failed {:status status
-                                                                          :method method
-                                                                          :response body}])
+                                                                         :method method
+                                                                         :response body}])
 
    :else (put! channel [event :success {:method method
-                                         :status status
-                                         :response body}])))
+                                        :status status
+                                        :response body}])))
 
 (defn api-call
   "(Doesn't respect `:all-pages`...)"
