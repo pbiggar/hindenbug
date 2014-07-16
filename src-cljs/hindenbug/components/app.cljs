@@ -1,4 +1,4 @@
-(ns hindenbug.app
+(ns hindenbug.components.app
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close! put!]]
             [hindenbug.components.dashboard :as dashboard]
             [hindenbug.components.login :as login]

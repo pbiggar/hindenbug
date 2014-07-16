@@ -2,7 +2,7 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close! put!]]
             [cljs-time.core :as time]
             [hindenbug.utils :as utils :refer [mlog merror]]
-            [hindenbug.app :as app]
+            [hindenbug.components.app :as app]
             [weasel.repl :as ws-repl]
             [clojure.browser.repl :as repl]
             [clojure.string :as string]
