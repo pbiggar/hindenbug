@@ -1,5 +1,12 @@
-body {
-  div {
-    border: 1px solid black;
-  }
+body div {
+  border: 1px solid black;
+}
+
+#create-issue input#title {
+  width: 500px;
+}
+
+#create-issue textarea#body {
+  width: 600px;
+  height: 400px;
 }

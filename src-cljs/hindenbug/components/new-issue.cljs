@@ -4,4 +4,8 @@
   (:require-macros [hindenbug.utils :refer (inspect defrender)]))
 
 (defrender new-issue [data owner]
-  (html [:h2 "Create a new issue"]))
+  (html
+   [:div#create-issue
+    [:h2 "Create a new issue"]
+    [:div [:input#title {:type "text"}]]
+    [:div [:textarea#body]]]))
