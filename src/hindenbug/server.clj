@@ -35,7 +35,8 @@
     [:html
      [:head
       (page/include-css "/css/bootstrap-3.2.0.min.css")
-      [:style "div {border: 1px solid black;}"]]
+      (page/include-css "/css/hindenbug.css")
+]
      [:body
       [:div#app]
       (page/include-js "/js/react-0.9.0.js")
@@ -107,6 +108,7 @@
   (-> router
       wrap-file
       (resource/wrap-resource "vendor")
+      (resource/wrap-resource "assets")
       file-info/wrap-file-info
       (session/wrap-session {:cookie-name "hindenbug-session"
                              :root "/"
