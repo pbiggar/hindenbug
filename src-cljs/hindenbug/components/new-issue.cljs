@@ -6,6 +6,10 @@
 (defrender new-issue [data owner]
   (html
    [:div#create-issue
-    [:h2 "Create a new issue"]
-    [:div [:input#title {:type "text"}]]
-    [:div [:textarea#body]]]))
+    [:div#enter
+     [:h2 "Create a new issue"]
+     [:div [:input#title {:type "text"}]]
+     [:div [:textarea#body]]]
+
+    [:div#search
+     [:h2 "output"]]]))
