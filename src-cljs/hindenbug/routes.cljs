@@ -36,8 +36,8 @@
     (defroute v1-root (FragmentRoute. "/logout") {:as params}
       (put! nav-ch [:logout]))
 
-    (defroute "/issues/:id" {:as params}
-      (put! nav-ch [:issue-board (-> params :id js/parseInt)]))
-
     (defroute "/issues/new" {:as params}
-      (put! nav-ch [:create-issue]))))
+      (put! nav-ch [:create-issue]))
+
+    (defroute "/issues/:id" {:as params}
+      (put! nav-ch [:issue-board (-> params :id js/parseInt)]))))
