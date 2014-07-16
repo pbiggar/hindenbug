@@ -12,50 +12,51 @@
 ;; --- API Multimethod Declarations ---
 
 (defmulti api-event
-  ;; target is the DOM node at the top level for the app
-  ;; message is the dispatch method (1st arg in the channel vector)
+  ;; event is the name of the event
+  ;; message is one of {:success :failure} (1st value in the channel vector)
   ;; args is the 2nd value in the channel vector)
   ;; state is current state of the app
   ;; return value is the new state
-  (fn [target message status args state] [message status]))
+  (fn [event message {:as args :keys [status method response]} state] [event message]))
 
 (defmulti post-api-event!
-  (fn [target message status args previous-state current-state] [message status]))
+  (fn [event message {:as args :keys [status method response]} previous-state current-state] [event message]))
 
 ;; --- API Multimethod Implementations ---
 
 (defmethod api-event :default
-  [target message status args state]
+  [event message {:as args :keys [status method response]} state]
   ;; subdispatching for state defaults
   (let [submethod (get-method api-event [:default status])]
     (if submethod
-      (submethod target message status args state)
+      (submethod event message status args state)
       (do (merror "Unknown api: " message args)
           state))))
 
 (defmethod post-api-event! :default
-  [target message status args previous-state current-state]
+  [event message {:as args :keys [status method response]} previous-state current-state]
   ;; subdispatching for state defaults
   (let [submethod (get-method post-api-event! [:default status])]
     (if submethod
-      (submethod target message status args previous-state current-state)
-      (merror "Unknown api: " message status args))))
+      (submethod event message status args previous-state current-state)
+      (merror "Unknown api: " event message status args))))
 
 (defmethod api-event [:default :success]
-  [target message status args state]
+  [event message {:as args :keys [status method response]} state]
   (mlog "No api for" [message status])
   state)
 
 (defmethod post-api-event! [:default :success]
-  [target message status args previous-state current-state]
+  [event message {:as args :keys [status method response]} previous-state current-state]
   (mlog "No post-api for: " [message status]))
 
 (defmethod api-event [:default :failed]
-  [target message status args state]
+  [event message {:as args :keys [status method response]} state]
   ;; XXX update the error message
   (mlog "No api for" [message status])
   state)
 
-(defmethod post-api-event! [:default :failed]
-  [target message status args previous-state current-state]
-  (mlog "No post-api for: " [message status]))
+(defmethod api-event [:issue :success]
+  [event message {:as args :keys [status method response]} state]
+;  (assoc-in state [:gh-cache :issues 1024] response)
+  )

@@ -86,37 +86,38 @@
   return nil.  If 400, 401, 204, 422, 403, 404 or 500, return the
   original response with the body parsed as json. Otherwise, parse and
   return the body if json, or return the body if raw."
-  [channel message method {:keys [headers status body] :as resp}]
+  [channel event method {:keys [headers status body] :as response}]
+  (let [links (parse-links (get headers "link" ""))
+        content-type (get headers "content-type")
+        metadata (extract-useful-meta headers)
+        body (if (some-> content-type (.indexOf "raw") pos?)
+               body
+               (if (map? body)
+                 (with-meta body {:links links :api-meta metadata})
+                 (with-meta (map #(with-meta % metadata) body)
+                   {:links links :api-meta metadata})))])
   (cond
    (= 304 status)
    ::not-modified
 
-   (#{400 401 204 422 403 404 500} status)
-   (put! channel [message method :failed status body])
+   (#{400 401 204 422 403 404 500} status) (put! channel [event :failed {:status status
+                                                                          :method method
+                                                                          :response body}])
 
-   :else (let [links (parse-links (get headers "link" ""))
-               content-type (get headers "content-type")
-               _ (print content-type)
-               metadata (extract-useful-meta headers)
-               _ (print metadata)
-               response (if (some-> content-type (.indexOf "raw") pos?)
-                          body
-                          (if (map? body)
-                            (with-meta body {:links links :api-meta metadata})
-                            (with-meta (map #(with-meta % metadata) body)
-                              {:links links :api-meta metadata})))]
-           (put! channel [message method :success response]))))
+   :else (put! channel [event :success {:method method
+                                         :status status
+                                         :response body}])))
 
 (defn api-call
   "(Doesn't respect `:all-pages`...)"
-  ([channel message method end-point] (api-call method end-point nil nil))
-  ([channel message method end-point positional] (api-call method end-point positional nil))
-  ([channel message method end-point positional query]
+  ([channel event method end-point] (api-call method end-point nil nil))
+  ([channel event method end-point positional] (api-call method end-point positional nil))
+  ([channel event method end-point positional query]
      (let [query (query-map query)
            all-pages? (query "all_pages")
            req (make-request method end-point positional query)
            resp (http/request req)]
-       (take! resp (partial handle-response channel message method)))))
+       (take! resp (partial handle-response channel event method)))))
 
 (defn- join-labels [m]
   (if (:labels m)
