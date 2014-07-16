@@ -33,7 +33,9 @@
   (hiccup/html
    (page/html5
     [:html
-     [:head (page/include-css "/css/bootstrap-3.2.0.min.css")]
+     [:head
+      (page/include-css "/css/bootstrap-3.2.0.min.css")
+      [:style "div {border: 1px solid black;}"]]
      [:body
       [:div#app]
       (page/include-js "/js/react-0.9.0.js")
