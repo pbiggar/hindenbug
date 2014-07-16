@@ -9,6 +9,10 @@
 (defn current-issue [data]
   (->> data :navigation-data (issue data)))
 
+(defn label->html [{:as label :keys [url name color]}]
+  [:div {:background-color color}
+   [:a {:href url} name]])
+
 (defrender column [data owner]
   (html
    [:h2 "Column"]))
@@ -19,9 +23,10 @@
     (html
      [:div
       [:h2 (str "issue: " number)]
-      [:div (str "log: ") title]
-      [:div (str "state: " state)]
-      [:div (str "num-comments: " comments)]])))
+      [:div "log: " title]
+      [:div "state: " state]
+      [:div "num-comments: " comments]
+      [:div "labels: " (map label->html labels)]])))
 
 
 (defrender dashboard [data owner]
