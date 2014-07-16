@@ -1,5 +1,6 @@
 (ns hindenbug.components.dashboard
   (:require [om.core :as om :include-macros true]
+            [clojure.string :as str]
             [sablono.core :refer-macros [html]])
   (:require-macros [hindenbug.utils :refer (inspect defrender)]))
 
@@ -13,16 +14,24 @@
   [:div {:background-color color}
    [:a {:href url} name]])
 
+(defn user->html [{:as user :keys [html_url login avatar_url]}]
+  [:div
+   [:img {:src avatar_url :width 20 :height 20}]
+   [:a {:href html_url} login]])
+
 (defrender column [data owner]
   (html
    [:h2 "Column"]))
 
 (defrender issue-outline [data owner]
   (let [issue (current-issue data)
-        {:keys [number body title comments state labels]} (inspect issue)]
+        {:keys [user closed_by number body title comments state labels]} (inspect issue)]
     (html
      [:div
       [:h2 (str "issue: " number)]
+      [:div "opened by " (-> user user->html html)]
+      (when closed_by
+        [:div "closed by " (-> closed_by user->html html)])
       [:div "log: " title]
       [:div "state: " state]
       [:div "num-comments: " comments]
