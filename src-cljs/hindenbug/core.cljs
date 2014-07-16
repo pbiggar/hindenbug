@@ -13,7 +13,6 @@
             [hindenbug.controllers.navigation :as nav-con]
             [hindenbug.controllers.api :as api-con]
             [hindenbug.routes :as routes]
-            [hindenbug.state :as state]
             [goog.events]
             [om.core :as om :include-macros true]
             [hindenbug.history :as history]
@@ -51,22 +50,25 @@
   (chan))
 
 (defn app-state []
-  (atom (assoc (state/initial-state)
-          :render-context {}
-          :comms {:controls  controls-ch
-                  :api       api-ch
-                  :errors    error-ch
-                  :nav       navigation-ch
-                  :controls-mult (async/mult controls-ch)
-                  :api-mult (async/mult api-ch)
-                  :errors-mult (async/mult error-ch)
-                  :nav-mult (async/mult navigation-ch)
-                  :mouse-move {:ch mouse-move-ch
-                               :mult (async/mult mouse-move-ch)}
-                  :mouse-down {:ch mouse-down-ch
-                               :mult (async/mult mouse-down-ch)}
-                  :mouse-up {:ch mouse-up-ch
-                             :mult (async/mult mouse-up-ch)}})))
+  (atom {:app {}
+         :gh-cache {}
+         :gh-shallow-cache {}
+
+         :navigation-point nil
+         :comms {:controls  controls-ch
+                 :api       api-ch
+                 :errors    error-ch
+                 :nav       navigation-ch
+                 :controls-mult (async/mult controls-ch)
+                 :api-mult (async/mult api-ch)
+                 :errors-mult (async/mult error-ch)
+                 :nav-mult (async/mult navigation-ch)
+                 :mouse-move {:ch mouse-move-ch
+                              :mult (async/mult mouse-move-ch)}
+                 :mouse-down {:ch mouse-down-ch
+                              :mult (async/mult mouse-down-ch)}
+                 :mouse-up {:ch mouse-up-ch
+                            :mult (async/mult mouse-up-ch)}}}))
 
 (defn log-channels?
   "Log channels in development, can be overridden by the log-channels query param"
