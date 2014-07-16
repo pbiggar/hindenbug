@@ -101,11 +101,11 @@
     (mlog "API Verbose: " (first value) (second value) (utils/third value)))
   (swallow-errors
    (let [previous-state @state
-         message (first value)
-         status (second value)
+         event (first value)
+         message (second value)
          api-data (utils/third value)]
-     (swap! state (partial api-con/api-event container message status api-data))
-     (api-con/post-api-event! container message status api-data previous-state @state))))
+     (swap! state (partial api-con/api-event container event message api-data))
+     (api-con/post-api-event! container event message api-data previous-state @state))))
 
 (defn main [state top-level-node]
   (let [comms       (:comms @state)
