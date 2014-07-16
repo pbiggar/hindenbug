@@ -3,5 +3,5 @@
             [sablono.core :refer-macros [html]])
   (:require-macros [hindenbug.utils :refer (inspect defrender)]))
 
-(defrender create-issue [data owner]
-  (html [:div]))
+(defrender new-issue [data owner]
+  (html [:h2 "Create a new issue"]))
