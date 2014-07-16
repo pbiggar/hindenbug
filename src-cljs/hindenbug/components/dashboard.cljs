@@ -4,7 +4,7 @@
   (:require-macros [hindenbug.utils :refer (inspect defrender)]))
 
 (defn issue [data number]
-  (-> data :gh-cache inspect :issues (get number)))
+  (-> data :gh-cache :issues (get number)))
 
 (defn current-issue [data]
   (->> data :navigation-data (issue data)))
@@ -15,9 +15,13 @@
 
 (defrender issue-outline [data owner]
   (let [issue (current-issue data)
-        {:keys [number body comments state labels]} issue]
+        {:keys [number body title comments state labels]} (inspect issue)]
     (html
-     [:h2 (str "issue: " number body comments state)])))
+     [:div
+      [:h2 (str "issue: " number)]
+      [:div (str "log: ") title]
+      [:div (str "state: " state)]
+      [:div (str "num-comments: " comments)]])))
 
 
 (defrender dashboard [data owner]
