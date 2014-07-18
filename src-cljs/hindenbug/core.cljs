@@ -53,6 +53,8 @@
   (atom {:app {}
          :gh-cache {}
          :gh-shallow-cache {}
+         :search {:title nil
+                  :cache {}}
 
          :navigation-point nil
          :comms {:controls  controls-ch

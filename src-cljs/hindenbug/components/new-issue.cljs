@@ -1,15 +1,25 @@
 (ns hindenbug.components.new-issue
   (:require [om.core :as om :include-macros true]
-            [sablono.core :refer-macros [html]])
+            [sablono.core :refer-macros [html]]
+            [cljs.core.async :as async :refer [put!]])
   (:require-macros [hindenbug.utils :refer (inspect defrender)]))
 
 (defrender new-issue [data owner]
-  (html
-   [:div#create-issue
-    [:div#enter
-     [:h2 "Create a new issue"]
-     [:div [:input#title {:type "text"}]]
-     [:div [:textarea#body]]]
+  (let [c (-> data :comms :controls)]
+    (html
+     [:div#create-issue
+      ;; TODO: every time a word is finished, and the word isn't a small word, do
+      ;; a search. Cache all the searches with timestamps. Limit all searches to 5
+      ;; seconds, and don't repeat within 5 minutes. Combine searches for all the
+      ;; words from the title. Show in the sidebar.
+      [:div#enter
+       [:h2 "Create a new issue"]
+       [:div [:input#title {:type "text"
+                            :on-blur #(put! c [:search-blur {:value (.. % -target -value)}])
+                            :on-key-up #(put! c [:search-key-up {:key (.. % -which)
+                                                                 :value (.. % -target -value)}])}]]
+       [:div [:textarea#body]]]
 
-    [:div#search
-     [:h2 "output"]]]))
+      [:div#search
+       [:h2 "output"]
+       [:h3 (str "search terms" (-> data :search :title))]]])))
