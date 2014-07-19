@@ -5,6 +5,7 @@
             [hindenbug.util.json :as json]
             [goog.string :as gstring]
             [goog.string.format]
+            [hindenbug.login :as login]
             [cljs.core.async :refer (take! put!)])
   (:require-macros [hindenbug.utils :refer [inspect]]))
 
@@ -149,4 +150,13 @@
   (api-call channel :issue :get "repos/%s/%s/issues/%d" [user repo number] (join-labels options)))
 
 (defn issue-search [channel user repo term]
-  (print "searched for " term))
+  ;; GitHub search API doesn't allow URI components to be encoded, so we have
+  ;; to hack this.
+  (binding [http/encode-val (fn [k v] (str (name k) "=" v))]
+    (let [options [term
+                   "state:open"
+                   "type:issue"
+                   "in:body,comments,title"
+                   (str "repo:" user "/" repo)]]
+      (api-call channel :issue-search :get "search/issues" [] {:q (str "" (str/join "+" options))
+                                                               :oauth_token (login/oauth-token)}))))
