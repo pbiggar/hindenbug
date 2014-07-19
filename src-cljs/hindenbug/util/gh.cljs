@@ -147,3 +147,6 @@
   "Get a single issue"
   [channel user repo number & [options]]
   (api-call channel :issue :get "repos/%s/%s/issues/%d" [user repo number] (join-labels options)))
+
+(defn issue-search [channel user repo term]
+  (print "searched for " term))

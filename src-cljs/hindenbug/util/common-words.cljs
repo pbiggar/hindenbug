@@ -1,4 +1,3 @@
-
 (ns hindenbug.util.common-words)
 
 (def words

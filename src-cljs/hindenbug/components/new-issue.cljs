@@ -1,8 +1,16 @@
 (ns hindenbug.components.new-issue
   (:require [om.core :as om :include-macros true]
             [sablono.core :refer-macros [html]]
+            [clojure.string :as str]
+            [hindenbug.util.common-words :as common]
             [cljs.core.async :as async :refer [put!]])
   (:require-macros [hindenbug.utils :refer (inspect defrender)]))
+
+(defn terms [data]
+  (let [words (if (-> data :search :include-last-term?)
+                (-> data :search :terms)
+                (butlast (-> data :search :terms)))]
+    (remove common/words words)))
 
 (defrender new-issue [data owner]
   (let [c (-> data :comms :controls)]
@@ -22,4 +30,4 @@
 
       [:div#search
        [:h2 "output"]
-       [:h3 (str "search terms" (-> data :search :title))]]])))
+       [:h3 (str "search terms" (str/join " " (terms data)))]]])))

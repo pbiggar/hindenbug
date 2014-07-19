@@ -53,7 +53,9 @@
   (atom {:app {}
          :gh-cache {}
          :gh-shallow-cache {}
-         :search {:title nil
+         :search {:title ""
+                  :include-last-term? false
+                  :terms []
                   :cache {}}
 
          :navigation-point nil
