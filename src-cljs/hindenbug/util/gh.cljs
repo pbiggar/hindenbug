@@ -141,13 +141,13 @@
      direction -- asc: ascending,
                   desc (default): descending.
      since     -- String ISO 8601 timestamp."
-  [channel user repo & [options]]
-  (api-call channel :issues :get "repos/%s/%s/issues" [user repo] (join-labels options)))
+  [channel user repo & [search-options]]
+  (api-call channel :issues :get "repos/%s/%s/issues" [user repo] (join-labels search-options)))
 
 (defn issue
   "Get a single issue"
-  [channel user repo number & [options]]
-  (api-call channel :issue :get "repos/%s/%s/issues/%d" [user repo number] (join-labels options)))
+  [channel user repo number]
+  (api-call channel :issue :get "repos/%s/%s/issues/%d" [user repo number]))
 
 (defn issue-search [channel user repo term]
   ;; GitHub search API doesn't allow URI components to be encoded, so we have
