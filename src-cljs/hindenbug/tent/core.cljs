@@ -6,10 +6,11 @@
             [clojure.string :as str]
             [goog.string :as gstring]
             [goog.string.format]
-            [hindenbug.util.json :as json])
+            [hindenbug.util.json :as json]
+            [hindenbug.util.core :refer (apply-map)])
   (:require-macros [hindenbug.utils :refer [inspect]]))
 
-;;; This file is a copy of tentacles.core. Changes are annoted with CHANGED:
+;;; This file is a copy of tentacles.core. See NOTES for any changes.
 
 (def ^:dynamic url "https://api.github.com/")
 (def ^:dynamic defaults {})
@@ -21,7 +22,7 @@
         (for [[k v] (concat defaults entries)]
           [(.replace (name k) "-" "_") v])))
 
-;;; CHNAGED: json refers to our json, not clj-json
+;;; NOTES: json refers to our json, not clj-json
 (defn parse-json
   "Same as json/parse-string but handles nil gracefully."
   [s] (when s (json/parse-string s true)))
@@ -38,7 +39,7 @@
        (map parse-link)
        (into {})))
 
-;;; CHNAGED: use js/parseInt instead of parseLong. All values should be in
+;;; NOTES: use js/parseInt instead of parseLong. All values should be in
 (defn extract-useful-meta
   [h]
   (let [{:strs [etag last-modified x-ratelimit-limit x-ratelimit-remaining
@@ -53,61 +54,47 @@
   [obj]
   (:api-meta (meta obj)))
 
-;;; CHANGED: Changed a lot because cjs is asyncronous. Mostly just call a
-;;; callback on success.
 (defn safe-parse
-  "Takes a response and checks for certain status codes. If 204,
-  return nil.  If 400, 401, 204, 422, 403, 404 or 500, return the
-  original response with the body parsed as json. Otherwise, parse and
-  return the body if json, or return the body if raw."
-  [callback event context method {:keys [headers status body] :as response}]
-  (let [links (parse-links (get headers "link" ""))
-        content-type (get headers "content-type")
-        metadata (extract-useful-meta headers)
-        body (if (some-> content-type (.indexOf "raw") pos?)
-               body
-               (if (map? body)
-                 (with-meta body {:links links :api-meta metadata})
-                 (with-meta (map #(with-meta % metadata) body)
-                   {:links links :api-meta metadata})))])
+  "Takes a response and checks for certain status codes. If 204, return nil.
+   If 400, 401, 204, 422, 403, 404 or 500, return the original response with the body parsed
+   as json. Otherwise, parse and return the body if json, or return the body if raw."
+  [{:keys [headers status body] :as resp}]
   (cond
    (= 304 status)
    ::not-modified
+   (#{400 401 204 422 403 404 500} status)
+   (update-in resp [:body] parse-json)
+   :else (let [links (parse-links (get headers "link" ""))
+               content-type (get headers "content-type")
+               metadata (extract-useful-meta headers)]
+           (if-not (.contains content-type "raw")
+             (let [parsed (parse-json body)]
+               (if (map? parsed)
+                 (with-meta parsed {:links links :api-meta metadata})
+                 (with-meta (map #(with-meta % metadata) parsed)
+                   {:links links :api-meta metadata})))
+             body))))
 
-   (#{400 401 204 422 403 404 500} status) (callback :success? false
-                                                     :event event
-                                                     :context context
-                                                     :status status
-                                                     :method method
-                                                     :response body)
-
-   :else (callback :success? true
-                   :event event
-                   :context context
-                   :status status
-                   :method method
-                   :response body)))
-
-;;; CHANGED: just not actually called from anywhere at the moment
+;;; NOTES: just not actually called from anywhere at the moment
 (defn update-req
   "Given a clj-http request, and a 'next' url string, merge the next url into the request"
   [req url]
   (let [url-map (url/url url)]
     (assoc-in req [:query-params] (-> url-map :query))))
 
-;;; CHANGED: not changed, just doesn't make much sense
+;;; NOTES: not changed, just doesn't make much sense
 (defn no-content?
   "Takes a response and returns true if it is a 204 response, false otherwise."
   [x] (= (:status x) 204))
 
-;;; CHNAGED: use url/url-encode instead
+;;; NOTES: use url/url-encode instead
 (defn format-url
   "Creates a URL out of end-point and positional. Called URLEncoder/encode on
    the elements of positional and then formats them in."
   [end-point positional]
   (str url (apply gstring/format end-point (map url/url-encode positional))))
 
-;;; CHANGED: use :json-params and with-crednentials
+;;; NOTES: use :json-params and with-crednentials
 (defn make-request [method end-point positional
                     {:strs [auth throw_exceptions follow_redirects accept
                             oauth_token etag if_modified_since user_agent]
@@ -130,24 +117,49 @@
                           {:headers {"User-Agent" user_agent}})
                         (when if_modified_since
                           {:headers {"if-Modified-Since" if_modified_since}}))
-        proper-query (dissoc query "auth" "oauth_token" "all_pages" "accept" "user_agent")
+        proper-query (dissoc query "auth" "oauth_token" "all_pages" "accept" "user_agent" "callback" "calling_context")
         req (if (#{:post :put :delete} method)
               (assoc req :json-params (or (proper-query "raw") proper-query))
               (assoc req :query-params proper-query))]
     req))
 
-;;; CHANGED: doesn't respect all_pages
+;;; NOTES: handle asyncronously, using :callback and :calling-context from query
 (defn api-call
-  ([callback event context method end-point] (api-call context method end-point nil nil))
-  ([callback event context method end-point positional] (api-call context method end-point positional nil))
-  ([callback event context method end-point positional query]
+  ([method end-point] (api-call method end-point nil nil))
+  ([method end-point positional] (api-call method end-point positional nil))
+  ([method end-point positional query]
      (let [query (query-map query)
            all-pages? (query "all_pages")
            req (make-request method end-point positional query)
-           resp (http/request req)]
-       (take! resp (partial handle-response callback event context method)))))
 
-;;; CHANGED: not changed, but useless
+           ;;; TODO: implement all_pages
+           ;; exec-request-one (fn exec-request-one [req]
+           ;;                    (safe-parse (http/request req)))
+           ;; exec-request (fn exec-request [req]
+           ;;                (let [resp (exec-request-one req)]
+           ;;                  (if (and all-pages? (-> resp meta :links :next))
+           ;;                    (let [new-req (update-req req (-> resp meta :links :next))]
+           ;;                      (lazy-cat resp (exec-request new-req)))
+           ;;                    resp)))
+
+           ;;; async reimplementation
+           callback (:callback query)
+           calling-context (:calling-context query)
+           response-channel (http/request req)
+           handler (fn [resp] (apply-map callback (safe-parse resp) calling-context))]
+       (take! response-channel handler))))
+
+;;; NOTES: not changed, and so won't actually work
+(defn raw-api-call
+  ([method end-point] (raw-api-call method end-point nil nil))
+  ([method end-point positional] (raw-api-call method end-point positional nil))
+  ([method end-point positional query]
+     (let [query (query-map query)
+           all-pages? (query "all_pages")
+           req (make-request method end-point positional query)]
+       (http/request req))))
+
+;;; NOTES: not changed, but useless
 (defn environ-auth
   "Lookup :gh-username and :gh-password in environ (~/.lein/profiles.clj or .lein-env) and return a string auth.
    Usage: (users/me {:auth (environ-auth)})"
@@ -158,10 +170,11 @@
   ([] (api-call :get "rate_limit"))
   ([opts] (api-call :get "rate_limit" nil opts)))
 
-(defmacro with-defaults [options & body]
- `(binding [defaults ~options]
-    ~@body))
+;;; NOTES: moved into core.clj
+;; (defmacro with-defaults [options & body]
+;;  `(binding [defaults ~options]
+;;     ~@body))
 
-(defmacro with-url [new-url & body]
- `(binding [url ~new-url]
-    ~@body))
+;; (defmacro with-url [new-url & body]
+;;  `(binding [url ~new-url]
+;;     ~@body))
