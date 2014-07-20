@@ -1,6 +1,6 @@
-(ns tentacles.search
+(ns hindenbug.tent.search
   "Implements the Github Search API: http://developer.github.com/v3/search/"
-  (:use [tentacles.core :only [api-call]]))
+  (:use [hindenbug.tent.core :only [api-call]]))
 
 (defn search-issues
   "Find issues by state and keyword"
