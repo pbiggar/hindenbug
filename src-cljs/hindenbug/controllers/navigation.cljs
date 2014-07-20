@@ -4,7 +4,7 @@
             [goog.dom]
             [goog.string :as gstring]
             [goog.style]
-            [hindenbug.util.gh :as gh]
+            [hindenbug.github :as github]
             [hindenbug.login :as login])
   (:require-macros [hindenbug.utils :refer [inspect]]
                    [dommy.macros :refer [sel sel1]]
@@ -85,4 +85,4 @@
 (defmethod post-navigated-to! :issue-board
   [history-imp navigation-point id previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
-    (gh/issue api-ch "circleci" "hindenbug-manual-test" id {:oauth_token (login/oauth-token)})))
+    (github/issue id :channel api-ch :event :load-issue)))

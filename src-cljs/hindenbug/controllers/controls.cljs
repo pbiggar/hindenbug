@@ -2,7 +2,7 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [hindenbug.utils :as utils :include-macros true]
             [hindenbug.components.new-issue :as new-issue]
-            [hindenbug.util.gh :as gh]
+            [hindenbug.github :as github]
             [clojure.string :as str])
   (:require-macros [dommy.macros :refer [sel sel1]]
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]]
@@ -54,7 +54,7 @@
   "Trigger to go search for missing terms"
   [state]
   (doseq [term (new-issue/terms state)]
-    (gh/issue-search (-> state :comms :api) "circleci" "circle" term)))
+    (github/issue-search (-> state :comms :api) term)))
 
 (defmethod post-control-event! :search-key-up
   [target message args previous-state current-state]
