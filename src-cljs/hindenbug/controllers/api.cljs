@@ -56,7 +56,7 @@
   (mlog "No api for" [event message])
   state)
 
-(defmethod api-event [:issue :success]
+(defmethod api-event [:load-issue :success]
   [containers event message {:as api-data :keys [status method response]} state]
   (assoc-in state [:gh-cache :issues 1024] response))
 
