@@ -26,7 +26,7 @@
 
 (defrender issue-outline [data owner]
   (let [issue (current-issue data)
-        {:keys [user closed_by number body title comments state labels]} (inspect issue)]
+        {:keys [user closed_by number body title comments state labels]} issue]
     (html
      (if-not issue
        [:div "loading"]
