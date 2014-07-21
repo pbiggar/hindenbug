@@ -57,10 +57,10 @@
   state)
 
 (defmethod api-event [:load-issue :success]
-  [containers event message {:as api-data :keys [status method response]} state]
-  (assoc-in state [:gh-cache :issues 1024] response))
+  [containers event message {:as api-data :keys [context response]} state]
+  (assoc-in state [:gh-cache :issues (-> response :body :number)] response))
 
 (defmethod api-event [:issue-search :success]
-  [containers event message {:as api-data :keys [status method response]} state]
+  [containers event message {:as api-data :keys [context response]} state]
 ;  (assoc-in state [:search :cache term] response)
   )

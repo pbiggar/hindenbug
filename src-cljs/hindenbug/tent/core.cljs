@@ -69,26 +69,20 @@
   [obj]
   (:api-meta (meta obj)))
 
-(defn safe-parse
+(defn handle-response
   "Takes a response and checks for certain status codes. If 204, return nil.
    If 400, 401, 204, 422, 403, 404 or 500, return the original response with the body parsed
    as json. Otherwise, parse and return the body if json, or return the body if raw."
   [{:keys [headers status body] :as resp}]
-  (cond
-   (= 304 status)
-   ::not-modified
-   (#{400 401 204 422 403 404 500} status)
-   (update-in resp [:body] parse-json)
-   :else (let [links (parse-links (get headers "link" ""))
-               content-type (get headers "content-type")
-               metadata (extract-useful-meta headers)]
-           (if-not (.contains content-type "raw")
-             (let [parsed (parse-json body)]
-               (if (map? parsed)
-                 (with-meta parsed {:links links :api-meta metadata})
-                 (with-meta (map #(with-meta % metadata) parsed)
-                   {:links links :api-meta metadata})))
-             body))))
+  (if (= 304 status)
+    nil
+    (assoc resp
+      :links (parse-links (get headers "link" ""))
+      :content-type (get headers "content-type")
+      :api-meta (extract-useful-meta headers)
+      :success? (-> status #{400 401 204 422 403 404 500} not)
+      ;; link is the only one which should be per-api call with all_pages
+      :body (parse-json body))))
 
 ;;; NOTES: just not actually called from anywhere at the moment
 (defn update-req
@@ -143,7 +137,10 @@
   ([method end-point] (api-call method end-point nil nil))
   ([method end-point positional] (api-call method end-point positional nil))
   ([method end-point positional query]
-     (let [query (query-map query)
+     (let [callback (or (:callback query) identity)
+           calling-context (or (:calling-context query) {})
+
+           query (query-map query)
            all-pages? (query "all_pages")
            req (make-request method end-point positional query)
 
@@ -156,13 +153,12 @@
            ;;                    (let [new-req (update-req req (-> resp meta :links :next))]
            ;;                      (lazy-cat resp (exec-request new-req)))
            ;;                    resp)))
-
-           ;;; async reimplementation
-           callback (:callback query)
-           calling-context (or (:calling-context query))]
+           ]
+       ;; async reimplementation
        (go (let [response (<! (request req))
-                 parsed (safe-parse response)]
-             (apply-map callback parsed calling-context))))))
+                 response (handle-response response)]
+             (when response
+               (callback response calling-context)))))))
 
 ;;; NOTES: not changed, and so won't actually work
 (defn raw-api-call

@@ -6,7 +6,7 @@
 
 
 (defn issue [data number]
-  (-> data :gh-cache :issues (get number)))
+  (-> data :gh-cache :issues (get number) :body))
 
 (defn current-issue [data]
   (->> data :navigation-data (issue data)))
