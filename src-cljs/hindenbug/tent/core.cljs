@@ -1,14 +1,29 @@
 (ns hindenbug.tent.core
   "A short version of tentacles, rewritten for cljs"
   (:require [cemerick.url :as url]
-            [cljs-http.client :as http]
-            [cljs.core.async :refer (take! put!)]
+            [cljs-http.core :as http-core]
+            [cljs-http.client :as http-client]
+            [cljs.core.async :refer (take! put! <!)]
             [clojure.string :as str]
             [goog.string :as gstring]
             [goog.string.format]
             [hindenbug.util.json :as json]
             [hindenbug.util.core :refer (apply-map)])
-  (:require-macros [hindenbug.utils :refer [inspect]]))
+  (:require-macros [hindenbug.utils :refer (inspect)]
+                   [cljs.core.async.macros :refer (go)]))
+
+;;; cljs-http.client/request insists on doing lots for us, which we don't need.
+;;; Make a request which does less.
+(def request
+  (-> http-core/request
+      http-client/wrap-accept
+      http-client/wrap-content-type
+      http-client/wrap-json-params
+      http-client/wrap-query-params
+      http-client/wrap-oauth
+      http-client/wrap-android-cors-bugfix
+      http-client/wrap-method
+      http-client/wrap-url))
 
 ;;; This file is a copy of tentacles.core. See NOTES for any changes.
 
@@ -144,10 +159,10 @@
 
            ;;; async reimplementation
            callback (:callback query)
-           calling-context (:calling-context query)
-           response-channel (http/request req)
-           handler (fn [resp] (apply-map callback (safe-parse resp) calling-context))]
-       (take! response-channel handler))))
+           calling-context (or (:calling-context query))]
+       (go (let [response (<! (request req))
+                 parsed (safe-parse response)]
+             (apply-map callback parsed calling-context))))))
 
 ;;; NOTES: not changed, and so won't actually work
 (defn raw-api-call
@@ -157,7 +172,7 @@
      (let [query (query-map query)
            all-pages? (query "all_pages")
            req (make-request method end-point positional query)]
-       (http/request req))))
+       (http-client/request req))))
 
 ;;; NOTES: not changed, but useless
 (defn environ-auth
