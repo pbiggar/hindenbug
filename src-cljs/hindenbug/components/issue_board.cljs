@@ -28,18 +28,20 @@
   (let [issue (current-issue data)
         {:keys [user closed_by number body title comments state labels]} (inspect issue)]
     (html
-     [:div
-      [:h2 (str "issue: " number)]
-      [:div "opened by " (-> user user->html html)]
-      (when closed_by
-        [:div "closed by " (-> closed_by user->html html)])
-      [:div "log: " title]
-      [:div "state: " state]
-      [:div "num-comments: " comments]
-      [:div "labels: " (map label->html labels)]])))
+     (if-not issue
+       [:div "loading"]
+       [:div
+        [:h2 (str "issue: " number)]
+        [:div "opened by " (-> user user->html html)]
+        (when closed_by
+          [:div "closed by " (-> closed_by user->html html)])
+        [:div "log: " title]
+        [:div "state: " state]
+        [:div "num-comments: " comments]
+        [:div "labels: " (map label->html labels)]]))))
 
 
-(defrender issue-dashboard [data owner]
+(defrender issue-board [data owner]
   (html
    [:div
     [:h2 "dashboard"]
