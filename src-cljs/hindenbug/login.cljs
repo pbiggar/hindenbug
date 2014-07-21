@@ -8,8 +8,8 @@
   (some-> "hindenbug-session"
           cookie/get
           js/decodeURIComponent
-          json/parse
-          (get "token")))
+          json/parse-string
+          (get :token)))
 
 
 (defn logged-in? []
