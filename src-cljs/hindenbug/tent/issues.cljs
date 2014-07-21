@@ -1,7 +1,8 @@
 (ns hindenbug.tent.issues
   "Implements the Github Issues API: http://developer.github.com/v3/issues/"
   (:use [hindenbug.tent.core :only [api-call no-content?]]
-        [clojure.string :only [join]]))
+        [clojure.string :only [join]])
+  (:require-macros [hindenbug.utils :refer (inspect)]))
 
 ;; Some API requests, namely GET ones, require that labels be passed as a
 ;; comma-delimited string of labels. The POST requests want it to be passed
