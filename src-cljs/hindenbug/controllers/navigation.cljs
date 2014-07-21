@@ -84,5 +84,7 @@
 
 (defmethod post-navigated-to! :issue-board
   [history-imp navigation-point id previous-state current-state]
-  (let [api-ch (get-in current-state [:comms :api])]
-    (github/issue id :channel api-ch :event :load-issue :issue-num id)))
+  (github/issue id
+                :channel current-state [:comms :api]
+                :event :load-issue
+                :issue-num id))

@@ -54,7 +54,10 @@
   "Trigger to go search for missing terms"
   [state]
   (doseq [term (new-issue/terms state)]
-    (github/issue-search (-> state :comms :api) term)))
+    (github/issue-search term
+                         :channel (-> state :comms :api)
+                         :event :find-term
+                         :term term)))
 
 (defmethod post-control-event! :search-key-up
   [target message args previous-state current-state]

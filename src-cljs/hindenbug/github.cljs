@@ -22,4 +22,8 @@
   (issues/specific-issue "circleci" "hindenbug-manual-test" number (c context)))
 
 (defn issue-search [term & {:as context}]
-  nil)
+  (search/search-issues (str term
+                             "type:issue in:title,body,comments state:open repo:circleci/circle")
+                        :updated
+                        :asc
+                        (c context)))

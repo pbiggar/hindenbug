@@ -60,7 +60,6 @@
   [containers event message {:as api-data :keys [context response]} state]
   (assoc-in state [:gh-cache :issues (-> response :body :number)] response))
 
-(defmethod api-event [:issue-search :success]
+(defmethod api-event [:find-term :success]
   [containers event message {:as api-data :keys [context response]} state]
-;  (assoc-in state [:search :cache term] response)
-  )
+  (assoc-in state [:search :cache (-> context :term)] response))

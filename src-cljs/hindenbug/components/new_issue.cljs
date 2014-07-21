@@ -12,6 +12,20 @@
                 (butlast (-> data :search :terms)))]
     (remove common/words words)))
 
+(defrender issue-summary [issue owner]
+  (let [{:keys [user closed_by number body title comments state labels]} issue]
+    (html
+     [:div
+      [:table
+       [:tr
+        [:td {:col-span 5} title]]
+       [:tr
+        [:td number]
+        [:td (-> user :login)]
+        [:td  state]
+        [:td comments]
+        [:td (map :name labels)]]]])))
+
 (defrender new-issue [data owner]
   (let [c (-> data :comms :controls)]
     (html
@@ -30,4 +44,9 @@
 
       [:div#search
        [:h2 "output"]
-       [:h3 (str "search terms" (str/join " " (terms data)))]]])))
+       [:h3 (str "search terms: " (str/join " " (terms data)))]
+       (let [terms (terms data)
+             all (map #(-> data :search :cache inspect (get %) :body :items) terms)
+             all (-> all flatten concat)]
+         (doall (for [result all]
+                  (om/build issue-summary result))))]])))
